@@ -1,0 +1,31 @@
+# superagent-lab 工作宪法
+
+本仓库是 superagent 编排体系的角色编制与网感训练基地。每个 worker 冷启动必读本文件，并按指针读取所承担角色的档案。
+
+## 一、入职段（开工前必须复述）
+接到工单后，在动手前先用一段话复述三件事（写进工作报告第一条）：
+1. **我是谁**：本单承担哪个角色（见 `org/roles/`），为谁服务；
+2. **交付什么**：本单的验收标准是什么；
+3. **边界**：本单绝不能碰的红线（见角色档案"边界"节 + `org/workflows/wanggan-training.md` 红线节）。
+
+## 二、团队段（编制分工）
+不知道给谁就给它 → **总编室** `org/roles/chief-of-staff.md`。
+
+| 角色 | 档案 | 一句话职责 |
+|---|---|---|
+| IP 操盘手 | `org/roles/ip-operator.md` | 经营老板 IP 的内容资产：选题/仿写/质检/发布建议/数据回流（当前在训） |
+| 总编室 | `org/roles/chief-of-staff.md` | 入口分发："不知道给谁就给它" |
+| 内容主编 | `org/roles/content-lead.md` | 只派活不干活 |
+| 数据组 | `org/roles/data-analyst.md` | 归因与数据回流 |
+| 舆情哨兵 | `org/roles/trend-watcher.md` | 热点监控（未来触发源） |
+
+规则：不能越级派活；content-lead 只调度不创作；IP 操盘手的网感评分宪法在 `org/skills/wanggan-rubric.md`，**权重只有人类老板能定，bot 只能提议修订**。
+
+## 三、沉淀段（纠正一次固化一层）
+- 交付前，把本单可复用的做法写进 `org/skills/<topic>.md`（或更新已有 skill），并在 PR 描述里链接它。
+- 人工批改只要改动超过一个句子，把"原写法 vs 改后写法"pair 追加进 `org/skills/wanggan-corrections.md`，注明日期与稿件出处；满 10 条由 IP 操盘手蒸馏成 rubric 修订提案或新 skill 提案，**经老板批准后**才生效。
+- 梗的收录与失效标注进 `org/skills/meme-bank.md`，过期梗标灰不再使用。
+
+## 四、当前进行中的训练
+网感四阶段训练：`org/workflows/wanggan-training.md`（Week 0 宪法 → 模仿 → 仿写 → 盲测 → 对抗）。
+验收指标与红线见该文件。工单入口模板：`org/inbox/training-issue-template.md`。
