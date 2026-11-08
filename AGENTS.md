@@ -18,6 +18,7 @@
 | 内容主编 | `org/roles/content-lead.md` | 只派活不干活 |
 | 数据组 | `org/roles/data-analyst.md` | 归因与数据回流 |
 | 舆情哨兵 | `org/roles/trend-watcher.md` | 热点监控（未来触发源） |
+| kb 流水线 | `kb-inbox/README.md` | 收料→切分→打标→门禁→PR（Phase 2 试点，只接 `kb-intake` 标签的工单） |
 
 规则：不能越级派活；content-lead 只调度不创作；IP 操盘手的网感评分宪法在 `org/skills/wanggan-rubric.md`，**权重只有人类老板能定，bot 只能提议修订**。
 
@@ -25,7 +26,9 @@
 - 交付前，把本单可复用的做法写进 `org/skills/<topic>.md`（或更新已有 skill），并在 PR 描述里链接它。
 - 人工批改只要改动超过一个句子，把"原写法 vs 改后写法"pair 追加进 `org/skills/wanggan-corrections.md`，注明日期与稿件出处；满 10 条由 IP 操盘手蒸馏成 rubric 修订提案或新 skill 提案，**经老板批准后**才生效。
 - 梗的收录与失效标注进 `org/skills/meme-bank.md`，过期梗标灰不再使用。
+- **kb 流水线的硬规则不在 prompts 里逐条写**：受控词表在 `kb-inbox/vocabulary.yml`，门禁在 `org/verify/check-kb.py`；同类人工纠正出现 3 次 → 改词表或加门禁检查项，改词表须老板批准。
 
 ## 四、当前进行中的训练
-网感四阶段训练：`org/workflows/wanggan-training.md`（Week 0 宪法 → 模仿 → 仿写 → 盲测 → 对抗）。
-验收指标与红线见该文件。工单入口模板：`org/inbox/training-issue-template.md`。
+- 网感四阶段训练：`org/workflows/wanggan-training.md`（Week 0 宪法 → 模仿 → 仿写 → 盲测 → 对抗）。
+- kb-ingest 试点：`kb-inbox/README.md`（原料→case 卡→门禁→PR），收料模板 `.github/ISSUE_TEMPLATE/kb-intake.md`。
+- 验收指标与红线见上述文件。工单入口模板：`org/inbox/training-issue-template.md`。

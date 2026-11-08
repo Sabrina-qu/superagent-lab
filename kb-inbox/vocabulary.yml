@@ -1,0 +1,58 @@
+# kb-ingest 受控词表（Phase 2 试点）
+# 纪律：worker 只能从本文件的枚举值里选，不得自造新值。
+# 需要新值 = 先发 issue 提案，老板批准后改本文件（改完 bump version）。
+version: 1
+updated: 2026-11-08
+
+# 来源平台
+platform:
+  - douyin
+  - bilibili
+  - xhs
+
+# 钩子（前 3 秒/首段）类型
+hook_type:
+  - 提问
+  - 反常识
+  - 痛点直击
+  - 数字清单
+  - 身份代入
+  - 冲突开场
+  - 悬念留白
+
+# 情绪曲线（结构走势）
+emotion_arc:
+  - 平稳
+  - 上升
+  - 反转
+  - 递进
+  - V型
+
+# CTA 手法
+cta_type:
+  - 引导关注
+  - 评论引导
+  - 下集预告
+  - 无CTA
+
+# 金句在全文的相对位置
+golden_line_position:
+  - 前1/3
+  - 中1/3
+  - 后1/3
+
+# 必填的正文小节（标题文字必须完全一致）
+required_sections:
+  - 钩子
+  - 情绪曲线
+  - 金句位置
+  - CTA 手法
+  - 评论区热门梗
+  - 结构标记
+
+# 禁改原则（门禁硬检查，见 org/verify/check-kb.py）
+fidelity:
+  quote_prefix: "原句:"
+  min_quotes: 2
+  forbid_ellipsis: true
+  forbid_rewrite: true
