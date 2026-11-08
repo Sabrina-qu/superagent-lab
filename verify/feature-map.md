@@ -7,15 +7,20 @@
 
 | 功能 | 入口 | 做什么 | 验证点（verify/greeter-check.js 对应门禁） |
 |---|---|---|---|
-| 问候 greet(name) | `node greeter.js <name>` 第一行输出；`require('./greeter').greet(name)` | 输出 `Hello, <name>!`，保持名字原样（不大写） | 门禁 [2/3] CLI 含 `Hello, Alice!`；门禁 [3/3] `greet('Bob') === 'Hello, Bob!'` |
-| 告别 farewell(name) | `node greeter.js <name>` 第二行输出；`require('./greeter').farewell(name)` | 输出 `Goodbye, <name>, see you!`，含名字 | 门禁 [2/3] CLI 含 `Goodbye, Alice, see you!`；门禁 [3/3] `farewell('Bob') === 'Goodbye, Bob, see you!'` |
+| 问候 greet(name) | `node greeter.js <name>` 第一行输出；`require('./greeter').greet(name)` | 输出 `Hello, <name>!`，保持名字原样（不大写）；空/缺名回落 `world` | 门禁 [2/3] CLI 含 `Hello, Alice!`；门禁 [3/3] `greet('Bob') === 'Hello, Bob!'` |
+| 告别 farewell(name) | `node greeter.js <name>` 第二行输出；`require('./greeter').farewell(name)` | 输出 `Goodbye, <name>, see you!`，含名字；空/缺名回落 `world` | 门禁 [2/3] CLI 含 `Goodbye, Alice, see you!`；门禁 [3/3] `farewell('Bob') === 'Goodbye, Bob, see you!'` |
 | 模块导出 | `require('./greeter')` | 导出 `greet` 与 `farewell` 两个函数 | 门禁 [3/3] 类型检查 |
+| CLI 用法提示 | `node greeter.js --help` | 打印 `用法: node greeter.js <名字>` 并 exit 0；裸跑保持 `world` 默认 | 待实现（Phase 1 训练单 #3）；实现后需加入门禁或测试 |
 
-### 当前已知缺陷（训练用基线）
+### 当前已知缺陷（训练用基线，2026-11-08 核对）
 
-- `greet` 会把名字转成全大写（`toUpperCase()`），不符合日常习惯 → 对应测试断言 `greet('Alice') === 'Hello, Alice!'`
-- `farewell` 漏掉名字 → 对应测试断言 `farewell('Alice') === 'Goodbye, Alice, see you!'`
-- `greet('')` 会输出字面量 `undefined` → 对应空名回落缺陷
+| # | 缺陷 | 现状 | 对应门禁 |
+|---|---|---|---|
+| 1 | `greet` 曾把名字转成全大写 | **已修复**（PR #2 合并） | 测试断言 `greet('Alice') === 'Hello, Alice!'` 已绿 |
+| 2 | `farewell` 曾漏掉名字 | **已修复**（PR #2 合并） | 测试断言 `farewell('Alice') === 'Goodbye, Alice, see you!'` 已绿 |
+| 3 | `greet('')` 输出字面量 `undefined` | **仍存在** | 门禁未覆盖空名边界（训练单 #1 要求补断言） |
+| 4 | `farewell('')` 输出 `Goodbye, , see you!` | **仍存在** | 门禁未覆盖空名边界（训练单 #2 要求补断言） |
+| 5 | `--help` 缺失、按名字处理 `--help` | **仍存在** | 无（训练单 #3，体验改进） |
 
 ### 验证方式
 
