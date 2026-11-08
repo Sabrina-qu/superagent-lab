@@ -32,3 +32,10 @@
 - 网感四阶段训练：`org/workflows/wanggan-training.md`（Week 0 宪法 → 模仿 → 仿写 → 盲测 → 对抗）。
 - kb-ingest 试点：`kb-inbox/README.md`（原料→case 卡→门禁→PR），收料模板 `.github/ISSUE_TEMPLATE/kb-intake.md`。
 - 验收指标与红线见上述文件。工单入口模板：`org/inbox/training-issue-template.md`。
+
+## 五、验证门禁（硬规则，不可绕过）
+1. **greeter 相关改动**：交付前必须跑 `node verify/greeter-check.js`；PR 描述或内部报告里原样贴完整输出与退出码。门禁失败不许报 ready。
+2. **kb-ingest 相关改动**：交付前必须跑 `python3 org/verify/check-kb.py <卡路径>`（或 `--self-test`）；PR 描述原样贴输出。门禁失败不许报 ready。
+3. **门禁与词表是硬约束，不是建议**：不许为了通过而删改门禁、放宽断言、跳过检查或改词表枚举值。修不动就报 blocked，并写清具体原因。
+4. **回归优先**：若你的改动让原本绿的门禁变红，先修回归，再谈交付。
+5. **纠正→硬规则**：同类人工纠正出现 3 次，转成门禁检查项或词表值（改词表须老板批准），而不是继续写在提示词里。
