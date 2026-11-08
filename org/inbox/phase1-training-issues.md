@@ -4,6 +4,13 @@
 > 用法：**只有白名单账号 `Sabrina-qu` 能派活**；请用该账号把下面 5 单依次贴成 issue（正文含 `@Sabrina-qu-bot` 才会触发）。
 > 纪律：Phase 1 只看评估与验证证据；每单都要在 PR/报告里贴 `node verify/greeter-check.js` 的完整输出与退出码。
 
+## 零、发单前必做（面板设置与判读）
+
+1. **让 observe 模式真的产生记录**：当前 eval 模式已是 `observe`，但 GitHub 来源的 `observeIssues / observeComments` 开关默认全关——此时只有「@bot 的明确请求」才会被受理（走 explicit 路由、会执行工单，评估记录 kind=accept）。
+   想要**只评估不执行**的 observe 记录，请到面板 **Settings → Sources → GitHub** 打开 **Observe new issues** 与 **Observe new comments**（保存即生效，无需重启）。
+2. **两种数据都能用**：开 observe 开关 → 记录 `ignore/accept` 判断（不执行）；不开 → 发单时 `@Sabrina-qu-bot`，记录 `accept` 但会真的派工单。Phase 1 基线建议两者都采。
+3. **判读口径**：评估记录看 DB `decision` 表（用 `tools/eval-baseline.py` 导出），与你的判断逐单对照；不要只看 IM 回复。
+
 ## 一、当前仓库状态（2026-11-08 23:20 核对）
 
 | 检查 | 结果 |
