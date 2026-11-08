@@ -1,0 +1,45 @@
+name: Eval probe
+
+# Manual-only probe for Phase 1 stability testing.
+# Creates an issue authored by github-actions[bot] that mentions the agent account,
+# producing a real `mention` notification the agent polls.
+on:
+  workflow_dispatch:
+    inputs:
+      probe:
+        description: 'Probe id (prefix of the title)'
+        required: true
+        default: 'p1'
+      title:
+        description: 'Issue title'
+        required: true
+        default: '[probe] greet 空名字输出字面量 undefined'
+      body:
+        description: 'Issue body (must mention @Sabrina-qu-bot)'
+        required: true
+        default: 'probe body mentioning @Sabrina-qu-bot'
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create probe issue
+        uses: actions/github-script@v7
+        env:
+          PROBE: ${{ github.event.inputs.probe }}
+          TITLE: ${{ github.event.inputs.title }}
+          BODY: ${{ github.event.inputs.body }}
+        with:
+          script: |
+            const fullTitle = `${process.env.PROBE} ${process.env.TITLE}`;
+            const res = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: fullTitle,
+              body: process.env.BODY,
+            });
+            core.info(`created issue #${res.data.number}: ${fullTitle}`);
