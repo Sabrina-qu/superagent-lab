@@ -4,13 +4,11 @@ function greet(name) {
   if (!name) {
     return 'Hello, ' + 'undefined' + '!'
   }
-  // 问题1: 会把名字喊成全大写,不符合日常习惯
-  return 'Hello, ' + name.toUpperCase() + '!'
+  return 'Hello, ' + name + '!'
 }
 
 function farewell(name) {
-  // 问题2: 漏掉了名字,输出不完整
-  return 'Goodbye, see you!'
+  return 'Goodbye, ' + name + ', see you!'
 }
 
 if (require.main === module) {
