@@ -9,6 +9,12 @@ assert(greet('sAbRiNa') === 'Hello, sAbRiNa!', 'greet should keep mixed-case nam
 assert(greet('bob') === 'Hello, bob!', 'greet should keep lowercase names as-is')
 assert(farewell('Alice') === 'Goodbye, Alice, see you!', 'farewell should include the name')
 
+// 空名/缺名边界：与 CLI 缺参行为一致，回落 world（issue #33）
+assert(greet('') === 'Hello, world!', 'greet should fall back to world on empty name')
+assert(greet(undefined) === 'Hello, world!', 'greet should fall back to world on missing name')
+assert(farewell('') === 'Goodbye, world, see you!', 'farewell should fall back to world on empty name')
+assert(farewell(undefined) === 'Goodbye, world, see you!', 'farewell should fall back to world on missing name')
+
 // --help 分支：打印用法行并 exit 0（execFileSync 在非零退出码时会抛错）
 const cli = path.join(__dirname, 'greeter.js')
 const helpOut = execFileSync('node', [cli, '--help'], { encoding: 'utf8' })

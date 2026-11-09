@@ -1,14 +1,11 @@
 /** 问候工具 */
 
 function greet(name) {
-  if (!name) {
-    return 'Hello, ' + 'undefined' + '!'
-  }
-  return 'Hello, ' + name + '!'
+  return 'Hello, ' + (name || 'world') + '!'
 }
 
 function farewell(name) {
-  return 'Goodbye, ' + name + ', see you!'
+  return 'Goodbye, ' + (name || 'world') + ', see you!'
 }
 
 if (require.main === module) {
