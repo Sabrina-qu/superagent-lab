@@ -48,11 +48,19 @@ def main(argv):
         since = datetime.fromisoformat(argv[argv.index('--since') + 1]).replace(tzinfo=timezone.utc)
 
     url = f'https://api.github.com/repos/{repo}/pulls?state=closed&per_page=50&sort=updated&direction=desc'
-    try:
-        pulls = api(url)
-    except Exception as exc:  # 网络/限流
-        print(f'ERROR: 无法读取 PR 列表：{exc}')
-        return 2
+    pulls = None
+    for attempt in range(3):
+        try:
+            pulls = api(url)
+            break
+        except Exception as exc:  # 网络/限流/截断
+            if attempt < 2:
+                print(f'列表拉取第 {attempt + 1} 次失败（{exc}），3 秒后重试')
+                import time
+                time.sleep(3)
+            else:
+                print(f'ERROR: 无法读取 PR 列表：{exc}')
+                return 2
 
     violated, checked, unknown = [], 0, []
     for pr in pulls:
@@ -62,8 +70,14 @@ def main(argv):
         if since and merged_at < since:
             continue
         checked += 1
-        # 列表接口的 merged_by 可能是 null，必须取单个 PR 详情确认合并人
-        detail = api(f"https://api.github.com/repos/{repo}/pulls/{pr['number']}")
+        # 列表接口的 merged_by 可能是 null，必须取单个 PR 详情确认合并人；
+        # 单个详情拉取失败（限流/截断）不得导致整次审计崩溃 -> 计入 unknown 留人工核
+        try:
+            detail = api(f"https://api.github.com/repos/{repo}/pulls/{pr['number']}")
+        except Exception as exc:
+            print(f'注意：#{pr["number"]} 详情拉取失败（{exc}），计入 unknown')
+            unknown.append((pr['number'], pr['title'], pr['merged_at']))
+            continue
         login = (detail.get('merged_by') or {}).get('login')
         if not login:
             unknown.append((pr['number'], pr['title'], pr['merged_at']))
