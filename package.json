@@ -1,0 +1,15 @@
+{
+  "name": "superagent-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "superagent 编排体系：角色编制、网感训练与 kb 流水线试点仓库",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node verify/greeter-check.js",
+    "verify:greeter": "node verify/greeter-check.js",
+    "verify:kb": "python3 org/verify/check-kb.py --self-test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
