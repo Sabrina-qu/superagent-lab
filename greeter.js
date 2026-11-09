@@ -1,14 +1,13 @@
 /** 问候工具 */
 
 function greet(name) {
-  if (!name) {
-    return 'Hello, ' + 'undefined' + '!'
-  }
-  return 'Hello, ' + name + '!'
+  // 空/缺名与 CLI 缺参行为一致：回落 world
+  return 'Hello, ' + (name || 'world') + '!'
 }
 
 function farewell(name) {
-  return 'Goodbye, ' + name + ', see you!'
+  // 空/缺名与 CLI 缺参行为一致：回落 world
+  return 'Goodbye, ' + (name || 'world') + ', see you!'
 }
 
 if (require.main === module) {
