@@ -24,8 +24,8 @@
 
 | 步骤（计划 6.3） | 状态 | 证据 |
 |---|---|---|
-| 1. 仓库加 `verify/`（跑测试 + 产物检查 + 格式校验） | 已完成（main） | `verify/greeter-check.js`、`verify/feature-map.md`；`node verify/greeter-check.js` → `greeter-check: all gates pass`，exit 0 |
-| 2. prompts 增加「验证优先」段（完成前必须跑 verify 并贴 PR） | 已完成 | prompts revision 从 1→2，`delivery` 段新增 `Verification gate:` 段（管理 API `PUT /orchestrator/api/prompts`，返回 `{"revision":2,"effect":"next-request"}`） |
+| 1. 仓库加 `verify/`（跑测试 + 产物检查 + 格式校验） | 已完成（main） | `verify/greeter-check.js`、`verify/feature-map.md`；`node verify/greeter-check.js` → `greeter-check: all gates pass`，exit 0。**2026-11-09 追加修复**：执行器 worktree 在 `/root/dsh-superagent/work/` 下，继承父级 `type: module`，导致门禁在 worktree 里报 `require is not defined`；仓库根新增 `package.json`（`"type":"commonjs"` + `npm test`），worktree 内实测 `node verify/greeter-check.js` 与 `npm test` 均 exit 0 |
+| 2. prompts 增加「验证优先」段（完成前必须跑 verify 并贴 PR） | 已完成 | prompts revision 1→2（本 agent 追加 feature-map + kb 纪律）→3（编号统一 1-13、门禁命令写明）→**4（删除内置「允许自动合并」语义，见 `docs/guardrail-audit-2026-11-09.md`）** |
 | 3. 手工造 3-5 个已知 bug issue，观察 observe 评估记录 | **待人工** | 5 单文本已备好：`org/inbox/phase1-training-issues.md`；仓库第 1/2 号 bug 已随 PR #2 修复，文档已改为「2 现存 bug + --help + README + 1 回归单」 |
 | 4. 对照观察记录调 prompts，重复 3 次至稳定 | 待步骤 3 之后 | 现有历史决策 9 条：accept 3（explicitRouted）、ignore 2、stop 1、unavailable 2（均为 2026-11-04 早期 timeout；11-08 评估已恢复正常）。稳定性复测待人工发单 |
 
@@ -55,7 +55,9 @@ exit=0
 
 ## 五、护栏与红线核对（6.5）
 
-1. 自动合并：关闭；prompts 明写每个 PR 由人合并。✅
+1. 自动合并：**❌ 已被突破 2 次**——PR #2（2026-11-08 22:44）与 PR #5（23:36）的 merged_by 均为 `Sabrina-qu-bot`、评审数 0，违反「所有 PR 人审」。
+   已加固：prompts revision 4 删除自动合并语义 + `AGENTS.md` 七「合并权（红线）」+ `org/verify/check-merge-policy.py` 审计脚本（实测 exit 1 抓出这两次）。
+   **仍需老板本人**：给 `main` 开分支保护（要求人工 review，收回 bot 合并权），详见 `docs/guardrail-audit-2026-11-09.md`。
 2. 白名单：GitHub 仅 `Sabrina-qu`；飞书仅同步群成员。未改动。✅
 3. worker 身份：`worker-bin/gh` → `gh-agent`（bot 账号），git 提交者 bot；未放入个人凭据。✅
 4. 每小时巡检：cron 任务 active，退出码语义按部署文档执行。✅
@@ -69,10 +71,22 @@ exit=0
 
 ## 七、剩余人工动作（按顺序）
 
-1. **合并 PR #5**（`agent/deploy-plan-handoff`，文档变更，无需代码评审）；
-2. **用 `Sabrina-qu` 账号按 `org/inbox/phase1-training-issues.md` 发 5 单**（每单含 `@Sabrina-qu-bot`）→ 采集 observe 评估基线，填观察记录表；
-3. 基线稳定后（≥3 单结论与判断一致）→ 按 6.1 进入 Phase 2 试跑：确认 10 篇真实料授权后按 `kb-intake` 模板投料，试跑 2 周；
-4. 每周三/日 15:00 复盘：重复纠正 ≥3 次 → 转词表值或门禁检查项（改词表须老板批准）。
+1. **给 `main` 开分支保护并收回 bot 合并权**（最高优先，见 `docs/guardrail-audit-2026-11-09.md` 第四节）；完成后跑 `python3 org/verify/check-merge-policy.py --since 2026-11-09` 验证 0 违规；
+2. 复核已被 bot 合并的 PR #2 / PR #5 内容是否需要保留或回滚（合并动作本身违规，内容仍需人审确认）；
+3. **用 `Sabrina-qu` 账号按 `org/inbox/phase1-training-issues.md` 发 5 单**（每单含 `@Sabrina-qu-bot`，并写明「只评估，不要改代码」——observe 模式拦不住 explicit 请求，见 `docs/phase1-policy-semantics.md`）→ 采集评估基线，填观察记录表；
+4. 基线稳定后（≥3 单结论与判断一致）→ 按 6.1 进入 Phase 2 试跑：确认 10 篇真实料授权后按 `kb-intake` 模板投料，试跑 2 周；
+5. 每周三/日 15:00 复盘：重复纠正 ≥3 次 → 转词表值或门禁检查项（改词表须老板批准）。
+
+## 九、2026-11-09 追加变更
+
+| 文件 | 变更 |
+|---|---|
+| `package.json`（新增） | 固定 `type: commonjs`，修复 worktree 内门禁无法运行；`npm test` 指向 greeter 门禁 |
+| `AGENTS.md` | 新增「七、合并权（红线）」；五/六节为 2026-11-08 夜间加入的验证门禁与身份硬规则 |
+| `org/verify/check-merge-policy.py`（新增） | 合并权审计：merged_by 为 agent/bot 即 exit 1 |
+| `docs/guardrail-audit-2026-11-09.md`（新增） | PR #2/#5 违规合并事故审计与加固记录 |
+| prompts | revision 4：删除内置「允许自动合并」语义（本机管理 API） |
+| `org/inbox/phase1-training-issues.md` | 按 PR #2 合并后的代码重写为 5 单真实缺口（空名 API、--help、README、门禁覆盖） |
 
 ## 八、已知风险
 
