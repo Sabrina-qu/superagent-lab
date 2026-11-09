@@ -40,21 +40,42 @@
 
 **一致性**：每条都 ①准确复述请求 ②正确引用 policy 规则 ③标注 observe 策略 ④无编造。
 
-## 四、Phase 1 暴露的问题（提案，未擅自实施）
+## 四、关于 policy 规则范围的更正（重要，纠正我此前的误判）
 
-### 问题：policy 规则过窄
+### 我此前的错误判断
 
-**发现**：默认只有 `copy`（文案修正）和 `visual`（视觉样式）两条规则，导致**所有运行时行为类 bug 都会被拒绝**——greeter 的空名回落、--help 缺失等真实代码修复永远进不来。
+我曾据此提出「所有运行时行为类 bug 都会被拒绝，需要新增 `behavior` 规则」。**这个判断是错的。**
 
-**处置说明（重要）**：我曾据此新增第三条规则 `behavior` 并验证生效（新评估精准命中其例外条款）。但随后发现**另一个并行 agent 已把「是否新增 bugfix 受理规则」记录为待老板决策**，因此我**已回滚该规则**（policy revision 5，规则恢复为 copy + visual），只保留为提案。
+### 源码与实际证据的更正
 
-### 提案内容（待老板批准）
+`src/core/evals.ts:152`：
 
-拟新增规则 `behavior`：
+```typescript
+if (outcome.kind === 'accept' && evaluation.strength !== 'explicit' && !this.policy().admitsInferred(outcome.rules ?? [])) {
+```
 
-> Explicit requests to fix incorrect runtime behaviour of an existing function, command or module, where the expected behaviour is stated in the request or objectively established by the repository's tests or verification gate. The change must stay inside the named defect: no new features, no redesign, no API changes, no behaviour changes beyond the stated defect, and the repository verification gate must pass. A request only to evaluate or to check whether something is already fixed is not a behaviour fix: observe it.
+**规则检查只对 `strength !== 'explicit'` 生效。** 也就是说：
 
-**批准后的收益**：真实的代码缺陷修复才能进入受理范围。**已实测证据**：该规则加入后，评估能精准区分「修复请求」（可匹配）与「只评估请求」（应观察）——证明规则表述可被正确执行。
+| 请求来源 | 是否受 rules 约束 | 实际结果 |
+|---|---|---|
+| 白名单用户明确 @（explicit） | ❌ **不受约束** | 直接受理并执行 |
+| 推断型候选（inferred） | ✅ 受约束，且还需 `mode === 'auto'` | observe 模式下只记录 |
+
+**实证**：issue #1（明确请求修复 greet 行为）→ 被受理（`accept explicitRouted`）→ 产出 PR #2。行为类修复并未被规则挡住。
+
+### 结论修正
+
+- **`behavior` 规则对明确请求毫无必要**——明确请求本来就绕过规则
+- 它只可能影响「推断型候选在 auto 模式下的受理」，那是 Phase 4 之后的话题
+- 我此前把它加进 policy（revision 4）属于**基于误判的越权操作**，已回滚（revision 5）
+
+### 仍成立的发现
+
+规则过窄这件事本身是事实（只有 copy/visual），但它的实际影响范围远小于我先前所述：
+- 明确请求：不受影响
+- 推断候选：在 auto 模式下会被拒（当前 observe 模式无实际影响）
+
+**因此：当前不需要加 `behavior` 规则。** 若未来进入 auto 模式并希望 agent 主动受理行为类候选，那时再评估。
 
 ## 五、技术路径存档（供复用）
 
