@@ -1,4 +1,4 @@
-# superagent-lab
+# superagent-lab 使用说明
 
 superagent 编排体系的角色编制与网感训练基地。本文件说明问候工具 `greeter.js` 的用法与验证方式（以 main 分支实际合并后的行为为准）。
 
