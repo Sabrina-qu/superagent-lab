@@ -43,3 +43,16 @@ gh api repos/Sabrina-qu/superagent-lab/branches/main/protection --jq '.required_
 
 - 给 bot token 补 `workflow` scope 后推送 `.github/workflows/verify.yml`（已备在 `tools/repo-files/verify.yml`），再把「Require status checks」打开，实现 CI 硬门禁；
 - 若担心误合并，可在 org 层加 ruleset 统一约束其他仓库。
+
+---
+
+## 六、2026-11-10 更新：保护已配置并验证生效
+
+- **此前误判**：用 bot token 查询 `GET /branches/main/protection` 得到 404，被误读为「未保护」。GitHub 对**无 admin 权限的 token 一律返回 404**（隐藏保护细节），所以那条 404 只能说明「bot 无 admin」，不能证明「未保护」。
+- **owner token 实查（2026-11-10）**：protection 存在，`required_approving_review_count=1`、`enforce_admins=false`；本轮把 `dismiss_stale_reviews` 改为 true。
+- **生效验证（关键）**：以 bot 账号尝试 `gh pr merge 71`，返回
+  `X Pull request ... is not mergeable: the base branch policy prohibits the merge.`
+  → **平台层已拦住 bot 合并**；随后由 owner 账号 approve + merge 同一 PR 成功（main `e19ea59`）。
+- 结论：**root fix 已达成**；今后 bot 无法再合并 PR，人审从提示词升级为平台强制。
+  - owner 仍可用 `--admin` 绕过（enforce_admins=false 的设计选择，便于你自己紧急合并）；
+  - 如需更严：把 ruleset 设为 include administrators，或收紧 push 权限。
