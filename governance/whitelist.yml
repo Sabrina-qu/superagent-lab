@@ -1,0 +1,8 @@
+# Whitelist configuration (§6.5 护栏 2)
+# GitHub: only Sabrina-qu can trigger
+# Feishu: only synced group members can trigger
+allow:
+  github:
+    - Sabrina-qu
+  feishu:
+    - synced-group-members
